@@ -1,0 +1,234 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Menu, X, User, LogOut, LayoutDashboard, Search, Users, ShieldCheck, ChevronDown, Brush } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+
+const Navbar = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    const [scrolled, setScrolled] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const { user, profile, signOut } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            setScrolled(currentScrollY > 10);
+
+            // Hide on scroll down, show on scroll up
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                setIsVisible(false);
+            } else {
+                setIsVisible(true);
+            }
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
+
+    const handleLogout = async () => {
+        await signOut();
+        setIsOpen(false);
+        setDropdownOpen(false);
+        navigate('/');
+    };
+
+    const isActive = (path) => location.pathname === path;
+
+    const navLinks = [
+        { name: 'Browse', path: '/listings', icon: Search },
+        { name: 'Roommates', path: '/roommates', icon: Users },
+        { name: 'Maids', path: '/maids', icon: Brush },
+    ];
+
+    const role = profile?.role || 'student';
+    const dashPath = role === 'owner' ? '/owner-dashboard' : '/dashboard';
+
+    const roleBadge = {
+        admin: { bg: 'bg-rose-50', text: 'text-rose-600', label: 'Admin' },
+        owner: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Owner' },
+        student: { bg: 'bg-blue-50', text: 'text-blue-900', label: 'Student' },
+    }[role] || { bg: 'bg-blue-50', text: 'text-blue-900', label: 'Student' };
+
+    return (
+        <>
+            <nav
+                className={`fixed top-0 w-full z-50 transition-all duration-500 ease-in-out px-4 py-3 ${scrolled
+                    ? 'bg-nav-surface/80 backdrop-blur-2xl border-b border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)]'
+                    : 'bg-nav-surface/60 backdrop-blur-xl border-b border-slate-100'
+                    } ${isVisible ? 'translate-y-0' : '-translate-y-full shadow-none'}`}
+            >
+                <div className="max-w-7xl mx-auto px-2">
+                    <div className="flex justify-between md:justify-between h-14 items-center relative">
+
+                        <Link to="/" className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center gap-3 group" onClick={() => setIsOpen(false)}>
+                            <div className="w-56 h-16 flex items-center justify-center rounded-3xl overflow-hidden group-hover:scale-105 transition-transform duration-300 bg-white p-1">
+                                <img src="/logo.png?v=8" alt="StaySetu Logo" className="w-full h-full object-contain" />
+                            </div>
+                        </Link>
+
+                        {/* Desktop Nav */}
+                        <div className="hidden md:flex items-center gap-2 bg-slate-100/60 p-1.5 rounded-full border border-slate-200">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    to={link.path}
+                                    className={`relative px-6 py-2 rounded-full text-[13px] font-black uppercase tracking-widest transition-all duration-300 ${isActive(link.path)
+                                        ? 'bg-[#ffffff] text-black shadow-[0_0_15px_rgba(255,255,255,0.6)]'
+                                        : 'text-black hover:text-black/80'
+                                        }`}
+                                    style={{
+                                        textShadow: 'none'
+                                    }}
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
+
+                        {/* Desktop Auth */}
+                        <div className="hidden md:flex items-center gap-4">
+                            {user ? (
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setDropdownOpen(!dropdownOpen)}
+                                        className="flex items-center gap-3 bg-slate-100/60 hover:bg-slate-200/60 border border-slate-200/60 pl-2 pr-4 py-1.5 rounded-full transition-all duration-300 group"
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-[#ffffff] flex items-center justify-center text-black text-xs font-black shadow-[0_0_10px_rgba(255,255,255,0.4)]">
+                                            {(profile?.fullName || profile?.name || 'U').charAt(0).toUpperCase()}
+                                        </div>
+                                        <span className="text-[13px] font-black text-black uppercase tracking-wider"
+                                            style={{ textShadow: 'none' }}>
+                                            {(profile?.fullName || profile?.name || 'User').split(' ')[0]}
+                                        </span>
+                                        <ChevronDown size={14} className={`text-black transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`}
+                                            style={{ filter: 'none' }} />
+                                    </button>
+
+                                    {/* Dropdown */}
+                                    {dropdownOpen && (
+                                        <>
+                                            <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+                                            <div className="absolute right-0 mt-3 w-56 bg-white border border-slate-200 rounded-[2rem] shadow-[0_12px_50px_rgba(0,0,0,0.15)] z-50 py-3 animate-fade-in origin-top-right overflow-hidden">
+                                                {/* User info */}
+                                                <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
+                                                    <p className="text-sm font-black text-slate-900 truncate uppercase tracking-tighter">{profile?.fullName || profile?.name || user?.email}</p>
+                                                    <p className="text-[10px] text-slate-500 truncate mt-0.5 font-bold uppercase">{user?.email}</p>
+                                                    <span className="inline-flex mt-2 px-2 py-0.5 rounded bg-[#ffffff] text-black text-[9px] font-black uppercase tracking-widest">
+                                                        {roleBadge.label}
+                                                    </span>
+                                                </div>
+                                                <div className="px-2 py-2">
+                                                    <Link
+                                                        to={dashPath}
+                                                        className="flex items-center gap-3 px-4 py-3 text-[12px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 hover:text-blue-900 rounded-2xl transition-all"
+                                                        onClick={() => setDropdownOpen(false)}
+                                                    >
+                                                        <LayoutDashboard size={14} /> Dashboard
+                                                    </Link>
+                                                    <button
+                                                        onClick={handleLogout}
+                                                        className="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500 hover:text-white rounded-2xl transition-all mt-1"
+                                                    >
+                                                        <LogOut size={14} /> Log out
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-4">
+                                    <Link to="/login" className="text-[13px] font-black text-slate-900 uppercase tracking-widest px-4 py-2 hover:bg-slate-100 rounded-full transition-all">
+                                        Log in
+                                    </Link>
+                                    <Link to="/signup" className="bg-slate-900 text-white px-7 py-2.5 rounded-full text-[13px] font-black uppercase tracking-widest shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-0.5 transition-all">
+                                        Get Started
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Mobile hamburger */}
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="md:hidden w-11 h-11 flex items-center justify-center rounded-full text-slate-900 transition-all bg-slate-100/80 border border-slate-200"
+                        >
+                            {isOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Mobile dropdown */}
+                {isOpen && (
+                    <div className="md:hidden bg-nav-surface/98 backdrop-blur-3xl border-t border-slate-200 animate-fade-in">
+                        <div className="px-4 pt-2 pb-8 space-y-1.5">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    to={link.path}
+                                    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-black transition-all ${isActive(link.path)
+                                        ? 'bg-slate-100 text-slate-900 shadow-sm'
+                                        : 'text-slate-900'
+                                        }`}
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    <link.icon size={18} /> {link.name}
+                                </Link>
+                            ))}
+
+                            <div className="pt-3 mt-3 border-t border-white/10 space-y-1.5">
+                                {user ? (
+                                    <>
+                                        {/* User info card */}
+                                        <div className="flex items-center gap-3 px-4 py-4 bg-slate-50 rounded-xl mb-3 border border-slate-200">
+                                            <div className="w-10 h-10 rounded-full bg-[#ffffff] flex items-center justify-center text-black text-sm font-black border border-slate-200 shadow-sm">
+                                                {(profile?.fullName || profile?.name || 'U').charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-sm font-black text-slate-900 truncate">{profile?.fullName || profile?.name || 'User'}</p>
+                                                <span className={`text-[10px] font-black uppercase tracking-wider text-slate-500`}>{roleBadge.label}</span>
+                                            </div>
+                                        </div>
+                                        <Link
+                                            to={dashPath}
+                                            className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-black text-slate-400 hover:bg-white/10 transition-all"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <LayoutDashboard size={18} /> Dashboard
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-black text-red-500 hover:bg-red-500/5 transition-all"
+                                        >
+                                            <LogOut size={18} /> Log out
+                                        </button>
+                                    </>
+                                ) : (
+                                    <div className="space-y-3 pt-2">
+                                        <Link to="/login" className="block text-center py-3.5 text-sm font-black text-black rounded-xl hover:bg-white/10 transition-all"
+                                            style={{ textShadow: '0 0 8px rgba(255, 255, 255, 0.8)' }}
+                                            onClick={() => setIsOpen(false)}>
+                                            Log in
+                                        </Link>
+                                        <Link to="/signup" className="btn-primary text-center block text-sm py-4 shadow-[0_0_20px_rgba(255,255,255,0.3)]" onClick={() => setIsOpen(false)}>
+                                            Get Started
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </nav>
+        </>
+    );
+};
+
+export default Navbar;

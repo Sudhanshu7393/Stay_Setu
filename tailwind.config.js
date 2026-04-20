@@ -1,0 +1,107 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+    content: [
+        "./index.html",
+        "./src/**/*.{js,ts,jsx,tsx}",
+    ],
+    theme: {
+        extend: {
+            colors: {
+                primary: {
+                    50: '#eff6ff',
+                    100: '#dbeafe',
+                    200: '#bfdbfe',
+                    300: '#93c5fd',
+                    400: '#60a5fa',
+                    500: '#3b82f6',
+                    600: '#2563eb',
+                    700: '#1d4ed8',
+                    800: '#1e40af',
+                    900: '#1e3a8a',
+                    950: '#172554',
+                },
+                accent: {
+                    50: '#fdf8f3',
+                    100: '#f7ebdc',
+                    200: '#EDD9C4',
+                    300: '#e2c3a4',
+                    400: '#d4a87e',
+                    500: '#c48f5e',
+                    600: '#b67a4a',
+                    700: '#976240',
+                    800: '#7a503a',
+                    900: '#644332',
+                    950: '#352119',
+                },
+                warm: {
+                    50: '#fdf8f3',
+                    100: '#f7ebdc',
+                    200: '#EDD9C4',
+                    300: '#e2c3a4',
+                    400: '#d4a87e',
+                    500: '#c48f5e',
+                },
+                neon: {
+                    green: '#39ff14',
+                    blue: '#00f3ff',
+                    pink: '#ff00ff',
+                    white: '#ffffff',
+                },
+                surface: '#F3EDE8',
+                'surface-2': '#E9E1D8',
+                'nav-surface': '#F7F5F3',
+            },
+            borderRadius: {
+                '2xl': '1rem',
+                '3xl': '1.5rem',
+                '4xl': '2rem',
+            },
+            boxShadow: {
+                'soft': '0 0 10px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.05)',
+                'premium': '0 0 30px rgba(255, 255, 255, 0.2), 0 0 60px rgba(0, 0, 0, 0.5)',
+                'glow': '0 0 15px rgba(255, 255, 255, 0.4)',
+                'glow-white': '0 0 20px rgba(255, 255, 255, 0.5)',
+                'glow-green': '0 0 25px rgba(255, 255, 255, 0.3)',
+                'card': '0 0 15px rgba(255, 255, 255, 0.15), 0 0 1px rgba(255, 255, 255, 0.3)',
+                'float': '0 0 40px rgba(255, 255, 255, 0.25), 0 0 100px rgba(0, 0, 0, 0.6)',
+                'shadow-glow-red': '0 0 15px rgba(239, 68, 68, 0.6)',
+                'shadow-glow-blue': '0 0 20px rgba(96, 165, 250, 0.5)',
+                'neon-green': '0 0 15px rgba(255, 255, 255, 0.5), 0 0 5px rgba(255, 255, 255, 0.3)',
+                'neon-white': '0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4)',
+            },
+            backgroundImage: {
+                'hero-gradient': 'linear-gradient(135deg, #172554 0%, #1e3a8a 40%, #1e40af 70%, #1d4ed8 100%)',
+                'brand-gradient': 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%)',
+                'brand-gradient-h': 'linear-gradient(90deg, #1e3a8a 0%, #1e40af 60%, #1d4ed8 100%)',
+                'card-gradient': 'linear-gradient(180deg, rgba(30,58,138,0) 60%, rgba(30,58,138,0.6) 100%)',
+                'mesh': 'radial-gradient(at 40% 20%, rgba(59,130,246,0.1) 0, transparent 50%), radial-gradient(at 80% 0%, rgba(237,217,196,0.1) 0, transparent 40%), radial-gradient(at 0% 50%, rgba(30,58,138,0.06) 0, transparent 50%)',
+            },
+            animation: {
+                'fade-in': 'fadeIn 0.4s ease-out forwards',
+                'slide-up': 'slideUp 0.5s ease-out forwards',
+                'float': 'float 6s ease-in-out infinite',
+                'float-slow': 'float 9s ease-in-out infinite',
+                'pulse-slow': 'pulse 4s ease-in-out infinite',
+            },
+            keyframes: {
+                fadeIn: {
+                    '0%': { opacity: '0' },
+                    '100%': { opacity: '1' },
+                },
+                slideUp: {
+                    '0%': { transform: 'translateY(20px)', opacity: '0' },
+                    '100%': { transform: 'translateY(0)', opacity: '1' },
+                },
+                float: {
+                    '0%, 100%': { transform: 'translateY(0px)' },
+                    '50%': { transform: 'translateY(-12px)' },
+                },
+            },
+            fontFamily: {
+                sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                display: ['Bungee', 'cursive'],
+            },
+        },
+    },
+    plugins: [],
+}
